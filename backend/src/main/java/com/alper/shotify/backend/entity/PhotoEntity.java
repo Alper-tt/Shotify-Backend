@@ -20,7 +20,7 @@ public class PhotoEntity {
     private String url;
 
     @Column(name = "Userd ID")
-    private Long userId;
+    private int userId;
 
     @Column(name = "Analysis Data")
     private String analysisData;
