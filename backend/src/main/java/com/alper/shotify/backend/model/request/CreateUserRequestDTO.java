@@ -1,4 +1,4 @@
-package com.alper.shotify.backend.model.response;
+package com.alper.shotify.backend.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ErrorResponse {
-    private String message;
-    private int statusCode;
+public class CreateUserRequestDTO {
+    private String username;
+    private String email;
 }

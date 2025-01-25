@@ -3,6 +3,8 @@ package com.alper.shotify.backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -21,4 +23,7 @@ public class UserEntity {
 
     @Column(name = "Email")
     private String email;
+
+    @OneToMany(mappedBy = "user")
+    private List<PhotoEntity> photos;
 }

@@ -12,7 +12,7 @@ public class SwaggerConfig {
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
                 .group("default")
-                .pathsToMatch("/**") // Tüm API'leri göstermek için
+                .pathsToMatch("/**")
                 .build();
     }
 }

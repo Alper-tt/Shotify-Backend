@@ -3,6 +3,8 @@ package com.alper.shotify.backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,9 +18,15 @@ public class RecommendationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long recommendationId;
 
-    @Column(name = "Photo ID")
-    private Long photoId;
+    @OneToOne
+    @JoinColumn(name = "photo_id")
+    private PhotoEntity photo;
 
-    @Column(name = "Song ID")
-    private Long songId;
+    @ManyToMany
+    @JoinTable(
+            name = "recommendation_songs",
+            joinColumns = @JoinColumn(name = "recommendation_id"),
+            inverseJoinColumns = @JoinColumn(name = "song_id")
+    )
+    private List<SongEntity> songs;
 }

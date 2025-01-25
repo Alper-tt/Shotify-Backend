@@ -1,7 +1,8 @@
 package com.alper.shotify.backend.controller;
 
-import com.alper.shotify.backend.entity.UserEntity;
 import com.alper.shotify.backend.model.request.UpdateUserRequestDTO;
+import com.alper.shotify.backend.model.request.CreateUserRequestDTO;
+import com.alper.shotify.backend.model.response.UserResponseDTO;
 import com.alper.shotify.backend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,36 +23,32 @@ public class UserController {
 
     @PostMapping
     @Operation(summary = "Kullanıcı oluştur")
-    public ResponseEntity<String> createUser(@RequestBody UserEntity user){
-        userService.create(user.getUsername(),user.getEmail());
-        return ResponseEntity.status(HttpStatus.CREATED).body("Kullancı Oluşturuldu: " + user.getUsername());
+    public ResponseEntity<UserResponseDTO> createUser(@RequestBody CreateUserRequestDTO requestDTO){
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(requestDTO));
     }
 
     @GetMapping
     @Operation(summary = "Kullanıcıları listele")
-    public ResponseEntity<List<UserEntity>> getUsers(){
-            List<UserEntity> users = userService.getUsers();
-            return ResponseEntity.ok(users);
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers(){
+            return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "ID'ye göre kullanıcı getir")
-    public ResponseEntity<UserEntity> getUserById(@PathVariable int id){
-            UserEntity user = userService.getUserById(id);
-            return ResponseEntity.ok(user);
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable int id){
+            return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "ID'ye göre kullanıcı sil")
     public ResponseEntity<String> deleteUser(@PathVariable int id){
         userService.deleteById(id);
-        return ResponseEntity.ok("Kullanıcı silindi: "+id);
+        return ResponseEntity.ok("Kullanıcı silindi: " + id);
     }
 
     @PutMapping
     @Operation(summary = "Kullanıcı bilgilerini güncelle")
-    public ResponseEntity<String> updateUser(@RequestBody UpdateUserRequestDTO updateUserRequestDTO){
-            userService.update(updateUserRequestDTO);
-            return ResponseEntity.ok("Kullanıcı güncellendi: "+updateUserRequestDTO.getUsername());
+    public ResponseEntity<UserResponseDTO> updateUser(@RequestBody UpdateUserRequestDTO updateUserRequestDTO){
+            return ResponseEntity.ok(userService.update(updateUserRequestDTO));
     }
 }

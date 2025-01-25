@@ -1,6 +1,7 @@
 package com.alper.shotify.backend.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,14 +15,19 @@ import lombok.*;
 public class PhotoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long photoId;
+    private int photoId;
 
     @Column(name = "Photo URL")
     private String url;
 
-    @Column(name = "Userd ID")
-    private int userId;
-
     @Column(name = "Analysis Data")
     private String analysisData;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private UserEntity user;
+
+    @OneToOne(mappedBy = "photo")
+    private RecommendationEntity recommendation;
 }

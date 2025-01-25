@@ -3,6 +3,8 @@ package com.alper.shotify.backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -26,4 +28,7 @@ public class SongEntity {
 
     @Column(name = "Lyrics")
     private String lyrics;
+
+    @ManyToMany(mappedBy = "songs")
+    private List<RecommendationEntity> recommendations;
 }
