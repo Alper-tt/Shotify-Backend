@@ -17,7 +17,7 @@ import java.util.List;
 public class UserService {
     private final IUserRepository userRepository;
 
-    public UserResponseDTO create(CreateUserRequestDTO requestDTO) {
+    public UserResponseDTO createUser(CreateUserRequestDTO requestDTO) {
         if(userRepository.existsByUsername(requestDTO.getUsername()) || userRepository.existsByEmail(requestDTO.getEmail()))
         {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Kullanıcı adı veya E-posta zaten mevcut");

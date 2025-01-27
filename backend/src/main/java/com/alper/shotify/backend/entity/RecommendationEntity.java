@@ -16,7 +16,7 @@ public class RecommendationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long recommendationId;
+    private int recommendationId;
 
     @OneToOne
     @JoinColumn(name = "photo_id")

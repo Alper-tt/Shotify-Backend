@@ -24,13 +24,13 @@ public class UserController {
     @PostMapping
     @Operation(summary = "Kullanıcı oluştur")
     public ResponseEntity<UserResponseDTO> createUser(@RequestBody CreateUserRequestDTO requestDTO){
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(requestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(requestDTO));
     }
 
     @GetMapping
     @Operation(summary = "Kullanıcıları listele")
     public ResponseEntity<List<UserResponseDTO>> getAllUsers(){
-            return ResponseEntity.ok(userService.getAllUsers());
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{id}")

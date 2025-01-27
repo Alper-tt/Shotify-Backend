@@ -29,5 +29,6 @@ public class PhotoEntity {
     private UserEntity user;
 
     @OneToOne(mappedBy = "photo")
+    @JsonIgnore
     private RecommendationEntity recommendation;
 }
