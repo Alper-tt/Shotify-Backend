@@ -16,5 +16,5 @@ import java.util.List;
 public class UpdateRecommendationRequestDTO {
     private int recommendationId;
     private int photoId;
-    private List<SongEntity> songs;
+    private List<Integer> songIds;
 }

@@ -14,5 +14,5 @@ import java.util.List;
 @NoArgsConstructor
 public class CreateRecommendationRequestDTO {
     private int photoId;
-    private List<SongEntity> songs;
+    private List<Integer> songIds;
 }

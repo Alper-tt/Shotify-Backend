@@ -35,7 +35,7 @@ public class PhotoController {
 
     @GetMapping("/{id}")
     @Operation(summary = "ID'ye göre fotoğraf getir")
-    public ResponseEntity<PhotoResponseDTO> getPhoto(@PathVariable Integer id){
+    public ResponseEntity<PhotoResponseDTO> getPhotoById(@PathVariable Integer id){
         return ResponseEntity.ok(photoService.getPhotoById(id));
     }
 

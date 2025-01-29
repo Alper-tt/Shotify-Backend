@@ -1,5 +1,6 @@
 package com.alper.shotify.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,5 +31,6 @@ public class SongEntity {
     private String lyrics;
 
     @ManyToMany(mappedBy = "songs")
+    @JsonIgnore
     private List<RecommendationEntity> recommendations;
 }

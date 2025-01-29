@@ -2,11 +2,13 @@ package com.alper.shotify.backend.service;
 
 import com.alper.shotify.backend.entity.PhotoEntity;
 import com.alper.shotify.backend.entity.RecommendationEntity;
+import com.alper.shotify.backend.entity.SongEntity;
 import com.alper.shotify.backend.model.request.CreateRecommendationRequestDTO;
 import com.alper.shotify.backend.model.request.UpdateRecommendationRequestDTO;
 import com.alper.shotify.backend.model.response.RecommendationResponseDTO;
 import com.alper.shotify.backend.repository.IPhotoRepository;
 import com.alper.shotify.backend.repository.IRecommendationRepository;
+import com.alper.shotify.backend.repository.ISongRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,17 +21,18 @@ import java.util.List;
 public class RecommendationService {
     private final IRecommendationRepository recommendationRepository;
     private final IPhotoRepository photoRepository;
+    private final ISongRepository songRepository;
 
     public RecommendationResponseDTO createRecommendation (CreateRecommendationRequestDTO requestDTO){
-        System.out.println(requestDTO.getPhotoId());
         PhotoEntity photo = photoRepository.findById(requestDTO.getPhotoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fotoğraf bulunamadı"));
+        List<SongEntity> songs = songRepository.findAllById(requestDTO.getSongIds());
         RecommendationEntity recommendationEntity = RecommendationEntity.builder()
                 .photo(photo)
-                .songs(requestDTO.getSongs())
+                .songs(songs)
                 .build();
         recommendationRepository.save(recommendationEntity);
-        return new RecommendationResponseDTO(recommendationEntity.getRecommendationId(), requestDTO.getPhotoId(), requestDTO.getSongs());
+        return new RecommendationResponseDTO(recommendationEntity.getRecommendationId(), requestDTO.getPhotoId(), recommendationEntity.getSongs());
     }
 
     public List<RecommendationResponseDTO> getAllRecommendations(){
@@ -68,14 +71,15 @@ public class RecommendationService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Öneri bulunamadı"));
         PhotoEntity photo = photoRepository.findById(requestDTO.getPhotoId())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fotoğraf bulunamadı"));
+        List<SongEntity> songs = songRepository.findAllById(requestDTO.getSongIds());
         recommendation.setPhoto(photo);
-        recommendation.setSongs(requestDTO.getSongs());
+        recommendation.setSongs(songs);
         recommendationRepository.save(recommendation);
 
         return new RecommendationResponseDTO(
                 recommendation.getRecommendationId(),
                 requestDTO.getPhotoId(),
-                requestDTO.getSongs()
+                recommendation.getSongs()
         );
     }
 }
