@@ -25,7 +25,6 @@ public class SongService {
                 .songTitle(requestDTO.getSongTitle())
                 .songArtist(requestDTO.getSongArtist())
                 .songUrl(requestDTO.getSongUrl())
-                .lyrics(requestDTO.getLyrics())
                 .recommendations(requestDTO.getRecommendations())
         .build();
         songRepository.save(song);
@@ -34,7 +33,6 @@ public class SongService {
                 song.getSongTitle(),
                 song.getSongArtist(),
                 song.getSongUrl(),
-                song.getLyrics(),
                 song.getRecommendations());
     }
 
@@ -45,7 +43,6 @@ public class SongService {
                 song.getSongTitle(),
                 song.getSongArtist(),
                 song.getSongUrl(),
-                song.getLyrics(),
                 song.getRecommendations());
     }
 
@@ -61,7 +58,6 @@ public class SongService {
                         song.getSongTitle(),
                         song.getSongArtist(),
                         song.getSongUrl(),
-                        song.getLyrics(),
                         song.getRecommendations()
                 )).toList();
     }
@@ -80,7 +76,6 @@ public class SongService {
         song.setSongTitle(requestDTO.getSongTitle());
         song.setSongArtist(requestDTO.getSongArtist());
         song.setSongUrl(requestDTO.getSongUrl());
-        song.setLyrics(requestDTO.getLyrics());
         song.setRecommendations(requestDTO.getRecommendations());
         songRepository.save(song);
 
@@ -89,7 +84,6 @@ public class SongService {
                 song.getSongTitle(),
                 song.getSongArtist(),
                 song.getSongUrl(),
-                song.getLyrics(),
                 song.getRecommendations()
         );
 

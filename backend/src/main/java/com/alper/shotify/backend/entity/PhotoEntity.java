@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -28,7 +30,7 @@ public class PhotoEntity {
     @JsonIgnore
     private UserEntity user;
 
-    @OneToOne(mappedBy = "photo")
+    @OneToOne(mappedBy = "photo", cascade = CascadeType.ALL)
     @JsonIgnore
     private RecommendationEntity recommendation;
 }

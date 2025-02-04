@@ -17,6 +17,5 @@ public class SongResponseDTO {
     private String songTitle;
     private String songArtist;
     private String songUrl;
-    private String lyrics;
     private List<RecommendationEntity> recommendations;
 }

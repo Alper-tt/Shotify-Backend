@@ -27,9 +27,6 @@ public class SongEntity {
     @Column(name = "URL")
     private String songUrl;
 
-    @Column(name = "Lyrics")
-    private String lyrics;
-
     @ManyToMany(mappedBy = "songs")
     @JsonIgnore
     private List<RecommendationEntity> recommendations;
