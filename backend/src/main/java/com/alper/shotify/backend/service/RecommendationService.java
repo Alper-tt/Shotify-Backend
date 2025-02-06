@@ -10,11 +10,16 @@ import com.alper.shotify.backend.repository.IPhotoRepository;
 import com.alper.shotify.backend.repository.IRecommendationRepository;
 import com.alper.shotify.backend.repository.ISongRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +27,7 @@ public class RecommendationService {
     private final IRecommendationRepository recommendationRepository;
     private final IPhotoRepository photoRepository;
     private final ISongRepository songRepository;
+    private final RestTemplate restTemplate;
 
     public RecommendationResponseDTO createRecommendation (CreateRecommendationRequestDTO requestDTO){
         PhotoEntity photo = photoRepository.findById(requestDTO.getPhotoId())
@@ -81,5 +87,18 @@ public class RecommendationService {
                 requestDTO.getPhotoId(),
                 recommendation.getSongs()
         );
+    }
+
+    @Service
+    public class SongRecommendationService {
+        public List<SongEntity> recommendSongs(List<String> keywords) {
+            HttpEntity<Map<String, List<String>>> request = new HttpEntity<>(Map.of("keywords", keywords));
+            ResponseEntity<List<SongEntity>> response = restTemplate.postForEntity(
+                    "http://localhost:5000/recommend-songs",
+                    request,
+                    new ParameterizedTypeReference<>() {}
+            );
+            return response.getBody();
+        }
     }
 }
