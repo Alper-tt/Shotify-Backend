@@ -28,12 +28,14 @@ public class PhotoService {
                 .url(requestDTO.getUrl())
                 .analysisData(requestDTO.getAnalysisData())
                 .recommendation(requestDTO.getRecommendation())
+                .photoPath(requestDTO.getPhotoPath())
                 .user(user)
                 .build();
 
         PhotoEntity savedPhoto = photoRepository.save(photo);
         return new PhotoResponseDTO(savedPhoto.getPhotoId(),
                 savedPhoto.getUser().getUserId(),
+                savedPhoto.getPhotoPath(),
                 savedPhoto.getUrl(),
                 savedPhoto.getAnalysisData(),
                 savedPhoto.getRecommendation());
@@ -44,6 +46,7 @@ public class PhotoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fotoğraf bulunamadı"));
         return new PhotoResponseDTO(photo.getPhotoId(),
                 photo.getUser().getUserId(),
+                photo.getPhotoPath(),
                 photo.getUrl(),
                 photo.getAnalysisData(),
                 photo.getRecommendation());
@@ -58,6 +61,7 @@ public class PhotoService {
                 .map(photo -> new PhotoResponseDTO(
                         photo.getPhotoId(),
                         photo.getUser().getUserId(),
+                        photo.getPhotoPath(),
                         photo.getUrl(),
                         photo.getAnalysisData(),
                         photo.getRecommendation()
@@ -84,6 +88,7 @@ public class PhotoService {
 
         return new PhotoResponseDTO(existPhoto.getPhotoId(),
                 existPhoto.getUser().getUserId(),
+                existPhoto.getPhotoPath(),
                 existPhoto.getUrl(),
                 existPhoto.getAnalysisData(),
                 existPhoto.getRecommendation());

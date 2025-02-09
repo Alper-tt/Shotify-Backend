@@ -15,4 +15,5 @@ public class CreatePhotoRequestDTO {
     private int userId;
     private String analysisData;
     private RecommendationEntity recommendation;
+    private String photoPath;
 }

@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecommendationResponseDTO {
-    private int recommendationId;
-    private int photoId;
-    private RecommendedSongsListResponseDTO songs;
+public class RecommendedSongDTO {
+    private String songArtist;
+    private int songId;
+    private String songTitle;
 }

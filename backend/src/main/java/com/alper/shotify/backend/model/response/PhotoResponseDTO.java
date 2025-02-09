@@ -13,6 +13,7 @@ import lombok.Setter;
 public class PhotoResponseDTO {
     private int photoId;
     private int userId;
+    private String photoPath;
     private String url;
     private String analysisData;
     private RecommendationEntity recommendation;

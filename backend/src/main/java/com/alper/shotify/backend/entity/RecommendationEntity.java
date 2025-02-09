@@ -1,5 +1,6 @@
 package com.alper.shotify.backend.entity;
 
+import com.alper.shotify.backend.model.response.RecommendedSongsListResponseDTO;
 import jakarta.persistence.*;
 import lombok.*;
 

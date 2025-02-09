@@ -19,8 +19,11 @@ public class PhotoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int photoId;
 
-    @Column(name = "Photo URL")
+    @Column(name = "photo URL")
     private String url;
+
+    @Column(name = "photo_path", unique = true)
+    private String photoPath;
 
     @Column(name = "Analysis Data")
     private String analysisData;
