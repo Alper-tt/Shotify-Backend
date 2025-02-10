@@ -1,19 +1,3 @@
-package com.alper.shotify.backend.model.request;
-
-import com.alper.shotify.backend.entity.RecommendationEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class CreatePhotoRequestDTO {
-    private String url;
-    private int userId;
-    private String analysisData;
-    private RecommendationEntity recommendation;
-    private String photoPath;
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:cc8d445b0d11bd5a902da402dbba24d3d1250ce7875e4b0dbb91497df3ba63c9
+size 478

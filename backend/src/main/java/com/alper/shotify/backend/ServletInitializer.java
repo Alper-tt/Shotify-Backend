@@ -1,13 +1,3 @@
-package com.alper.shotify.backend;
-
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-
-public class ServletInitializer extends SpringBootServletInitializer {
-
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(BackendApplication.class);
-	}
-
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:ce5b73a3ddea5202cc555b96c41cdd8c6d928c49dd0545048a285d9e16f64ebc
+size 416

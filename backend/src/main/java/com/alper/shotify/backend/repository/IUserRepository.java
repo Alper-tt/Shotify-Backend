@@ -1,9 +1,3 @@
-package com.alper.shotify.backend.repository;
-
-import com.alper.shotify.backend.entity.UserEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface IUserRepository extends JpaRepository<UserEntity, Integer> {
-    Boolean existsByUsername(String username);
-    Boolean existsByEmail(String email);
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:651a0d5cf523a383df2e3ecc53a3f98f7d1d075f4cb576a91dd3b71fc617ad83
+size 330

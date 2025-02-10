@@ -1,14 +1,3 @@
-package com.alper.shotify.backend.model.request;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.List;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class SongRecommendationRequest {
-    private List<String> keywords;
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:2afdab37e7448b918e78911285687338b87e76a6ee2543237537343384f47cd0
+size 285

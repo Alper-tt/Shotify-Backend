@@ -1,21 +1,3 @@
-package com.alper.shotify.backend.model.request;
-
-import com.alper.shotify.backend.entity.RecommendationEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.List;
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class UpdateSongRequestDTO {
-    private int songId;
-    private String songTitle;
-    private String songArtist;
-    private String songUrl;
-    private List<RecommendationEntity> recommendations;
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:de82fe17b6dd27ce1cbcc50718b02cca68836a6c4db3bf642ce04d846499767d
+size 487

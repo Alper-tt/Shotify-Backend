@@ -1,20 +1,3 @@
-package com.alper.shotify.backend.model.response;
-
-import com.alper.shotify.backend.entity.RecommendationEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class PhotoResponseDTO {
-    private int photoId;
-    private int userId;
-    private String photoPath;
-    private String url;
-    private String analysisData;
-    private RecommendationEntity recommendation;
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:beca1625efdff01c8f42e21abb9c64bfd7c4862814a52d0175a48d1a0cdd0d3c
+size 499

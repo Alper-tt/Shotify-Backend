@@ -1,15 +1,3 @@
-package com.alper.shotify.backend.model.response;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class ErrorResponseDTO {
-    private String message;
-    private int statusCode;
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:ac29193037728d10cd5183cc89ce252efd550f388f6a9613111642bcd93c5e0e
+size 308

@@ -1,16 +1,3 @@
-package com.alper.shotify.backend.model.request;
-
-import com.alper.shotify.backend.model.response.RecommendedSongsListResponseDTO;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class CreateRecommendationRequestDTO {
-    private int photoId;
-    private RecommendedSongsListResponseDTO recommendedSongs;
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:9e900aee6045fbbcb700fa97cd20fec829ca37177e348aea9a4ca66a464f2096
+size 412
