@@ -1,3 +1,22 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8ed4250c4acdf811fa4ce92474a03472d14b29c2e64fdc1d33dce158ec5cd721
-size 548
+services:
+  object-detection:
+    build:
+      context: ./object-detection-service
+      dockerfile: Dockerfile
+    container_name: object-detection
+    ports:
+      - "5005:5005"
+    volumes:
+      - ./sample_images:/app/sample_images
+    restart: unless-stopped
+
+  song-recommendation:
+    build:
+      context: ./song-recommendation-service
+      dockerfile: Dockerfile
+    container_name: song-recommendation
+    ports:
+      - "5003:5003"
+    volumes:
+      - ./turkish_song_lyrics.csv:/app/turkish_song_lyrics.csv
+    restart: unless-stopped

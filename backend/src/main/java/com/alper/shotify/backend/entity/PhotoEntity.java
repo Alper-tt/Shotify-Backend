@@ -1,3 +1,39 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:19747d880433f88d1e5e1691b661e16f146cbb8a672b6767385c73c2d5910031
-size 810
+package com.alper.shotify.backend.entity;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
+
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "photos")
+public class PhotoEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int photoId;
+
+    @Column(name = "photo URL")
+    private String url;
+
+    @Column(name = "photo_path", unique = true)
+    private String photoPath;
+
+    @Column(name = "Analysis Data")
+    private String analysisData;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private UserEntity user;
+
+    @OneToOne(mappedBy = "photo", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private RecommendationEntity recommendation;
+}

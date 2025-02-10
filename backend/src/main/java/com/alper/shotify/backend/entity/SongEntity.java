@@ -1,3 +1,36 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:887a2a664de8d2d5134520c2192282239a7f472c9332fab55b4c1f2cf547292f
-size 770
+package com.alper.shotify.backend.entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
+
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "songs")
+public class SongEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int songId;
+
+    @Column(name = "songTitle")
+    private String songTitle;
+
+    @Column(name = "songArtist")
+    private String songArtist;
+
+    @Column(name = "songAlbum")
+    private String songAlbum;
+
+    @Column(name = "songlyrics", columnDefinition = "TEXT")
+    private String songLyrics;
+
+    @ManyToMany(mappedBy = "songs")
+    @JsonIgnore
+    private List<RecommendationEntity> recommendations;
+}

@@ -1,3 +1,87 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:1b50ba3dd4e8785a4f9529929ec7ca42574280dd0cd8496319894c57df93766f
-size 3223
+package com.alper.shotify.backend.service;
+
+import com.alper.shotify.backend.entity.SongEntity;
+import com.alper.shotify.backend.model.request.CreateSongRequestDTO;
+import com.alper.shotify.backend.model.request.UpdateSongRequestDTO;
+import com.alper.shotify.backend.model.response.SongResponseDTO;
+import com.alper.shotify.backend.repository.ISongRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class SongService {
+    private final ISongRepository songRepository;
+
+    public SongResponseDTO createSong(CreateSongRequestDTO requestDTO){
+        if(songRepository.existsBySongTitle(requestDTO.getSongTitle()) && songRepository.existsBySongArtist(requestDTO.getSongArtist())){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Şarkı zaten mevcut");
+        }
+        SongEntity song = SongEntity.builder()
+                .songTitle(requestDTO.getSongTitle())
+                .songArtist(requestDTO.getSongArtist())
+                .songAlbum(requestDTO.getSongLyrics())
+                .songLyrics(requestDTO.getSongLyrics())
+        .build();
+        songRepository.save(song);
+
+        return new SongResponseDTO(song.getSongId(),
+                song.getSongTitle(),
+                song.getSongArtist()
+        );
+    }
+
+    public SongResponseDTO getSongById (int songId){
+        SongEntity song = songRepository.findById(songId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Şarkı bulunamadı"));
+
+        return new SongResponseDTO(song.getSongId(),
+                song.getSongTitle(),
+                song.getSongArtist()
+        );
+    }
+
+    public List<SongResponseDTO> getAllSongs(){
+        List<SongEntity> songs = songRepository.findAll();
+        if(songs.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT);
+        }
+
+        return songs.stream()
+                .map(song -> new SongResponseDTO(
+                        song.getSongId(),
+                        song.getSongTitle(),
+                        song.getSongArtist()
+                )).toList();
+    }
+
+    public void deleteSongById(int songId){
+        if(!songRepository.existsById(songId)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Şarkı bulunamadı");
+        }
+        songRepository.deleteById(songId);
+    }
+
+    public SongResponseDTO updateSong(UpdateSongRequestDTO requestDTO){
+        SongEntity song = songRepository.findById(requestDTO.getSongId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Şarkı bulunamadı"));
+
+        song.setSongTitle(requestDTO.getSongTitle());
+        song.setSongArtist(requestDTO.getSongArtist());
+        song.setSongAlbum(requestDTO.getSongAlbum());
+        song.setSongLyrics(requestDTO.getSongLyrics());
+        songRepository.save(song);
+
+        return new SongResponseDTO(
+                song.getSongId(),
+                song.getSongTitle(),
+                song.getSongArtist()
+        );
+
+    }
+}
+

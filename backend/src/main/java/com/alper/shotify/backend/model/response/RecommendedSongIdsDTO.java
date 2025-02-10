@@ -1,3 +1,16 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:3bb1745d512bb7b5ee475c84d91a3c64c9529d118101f0ae6e1599ee12d3478d
-size 327
+package com.alper.shotify.backend.model.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class RecommendedSongIdsDTO {
+    private List<Integer> recommendedSongIds;
+}

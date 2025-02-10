@@ -1,3 +1,19 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:2b1c11da6ff9f0b046e90a5a5dbe06274afd97b13856f61ad9ece692316c6ddf
-size 473
+package com.alper.shotify.backend.model.request;
+
+import com.alper.shotify.backend.entity.RecommendationEntity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class UpdatePhotoRequestDTO {
+    private int photoId;
+    private int userId;
+    private String url;
+    private String analysisData;
+    private RecommendationEntity recommendation;
+}

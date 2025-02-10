@@ -1,3 +1,29 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:095d843a715ee9a20eef080ffa74889fc58d4458fed64d7614c770c2ef959de3
-size 525
+package com.alper.shotify.backend.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
+
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+@Entity
+@Table(name = "users")
+public class UserEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int userId;
+
+    @Column(name = "Username")
+    private String username;
+
+    @Column(name = "Email")
+    private String email;
+
+    @OneToMany(mappedBy = "user")
+    private List<PhotoEntity> photos;
+}
