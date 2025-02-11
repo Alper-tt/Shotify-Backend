@@ -15,5 +15,5 @@ import java.util.List;
 public class RecommendationResponseDTO {
     private int recommendationId;
     private int photoId;
-    private List<SongEntity> songs;
+    private List<SongResponseDTO> songs;
 }

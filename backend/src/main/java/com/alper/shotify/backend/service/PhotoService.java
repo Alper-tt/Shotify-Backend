@@ -27,7 +27,7 @@ public class PhotoService {
         PhotoEntity photo = PhotoEntity.builder()
                 .url(requestDTO.getUrl())
                 .analysisData(requestDTO.getAnalysisData())
-                .recommendation(requestDTO.getRecommendation())
+                .recommendations(requestDTO.getRecommendation())
                 .photoPath(requestDTO.getPhotoPath())
                 .user(user)
                 .build();
@@ -36,9 +36,7 @@ public class PhotoService {
         return new PhotoResponseDTO(savedPhoto.getPhotoId(),
                 savedPhoto.getUser().getUserId(),
                 savedPhoto.getPhotoPath(),
-                savedPhoto.getUrl(),
-                savedPhoto.getAnalysisData(),
-                savedPhoto.getRecommendation());
+                savedPhoto.getUrl());
     }
 
     public PhotoResponseDTO getPhotoById(int photoId){
@@ -47,9 +45,7 @@ public class PhotoService {
         return new PhotoResponseDTO(photo.getPhotoId(),
                 photo.getUser().getUserId(),
                 photo.getPhotoPath(),
-                photo.getUrl(),
-                photo.getAnalysisData(),
-                photo.getRecommendation());
+                photo.getUrl());
     }
 
     public List<PhotoResponseDTO> getAllPhotos(){
@@ -62,9 +58,7 @@ public class PhotoService {
                         photo.getPhotoId(),
                         photo.getUser().getUserId(),
                         photo.getPhotoPath(),
-                        photo.getUrl(),
-                        photo.getAnalysisData(),
-                        photo.getRecommendation()
+                        photo.getUrl()
                 )).toList();
     }
 
@@ -83,14 +77,12 @@ public class PhotoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı"));
         existPhoto.setUrl(requestDTO.getUrl());
         existPhoto.setAnalysisData(requestDTO.getAnalysisData());
-        existPhoto.setRecommendation(requestDTO.getRecommendation());
+        existPhoto.setRecommendations(requestDTO.getRecommendation());
         photoRepository.save(existPhoto);
 
         return new PhotoResponseDTO(existPhoto.getPhotoId(),
                 existPhoto.getUser().getUserId(),
                 existPhoto.getPhotoPath(),
-                existPhoto.getUrl(),
-                existPhoto.getAnalysisData(),
-                existPhoto.getRecommendation());
+                existPhoto.getUrl());
     }
 }

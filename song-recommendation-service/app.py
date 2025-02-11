@@ -49,7 +49,6 @@ def recommend_songs_route():
     keywords = data['keywords']
     recommended = get_recommended_songs(' '.join(keywords))
     
-    # Sadece şarkı ID'lerini JSON olarak döndür
     song_ids = recommended['songId'].tolist()
     
     return jsonify({"recommendedSongIds": song_ids})

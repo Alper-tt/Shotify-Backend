@@ -1,9 +1,12 @@
 package com.alper.shotify.backend.service;
 
+import com.alper.shotify.backend.entity.PhotoEntity;
 import com.alper.shotify.backend.model.request.AnalyzePhotoRequest;
+import com.alper.shotify.backend.model.request.CreateRecommendationRequestDTO;
 import com.alper.shotify.backend.model.response.*;
-import com.alper.shotify.backend.repository.ISongRepository;
+import com.alper.shotify.backend.repository.IPhotoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.service.RequestBodyService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,12 +15,16 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class IntegrationService {
     private final WebClient.Builder webClientBuilder;
-    private final ISongRepository songRepository;
+    private final IPhotoRepository photoRepository;
+    private final RecommendationService recommendationService;
+    private final RequestBodyService requestBodyBuilder;
 
     @Value("${object.detection.url}")
     private String objectDetectionUrl;
@@ -25,12 +32,18 @@ public class IntegrationService {
     @Value("${song.recommendation.url}")
     private String songRecommendationUrl;
 
-    public RecommendedSongIdsDTO analyzePhoto (String photoPath){
+    public RecommendationResponseDTO analyzePhoto (AnalyzePhotoRequest requestDTO){
+        PhotoEntity photo = photoRepository.findById(requestDTO.getPhotoId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Photo not found"));
+
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("url", photo.getUrl());
+
         WebClient webClient = WebClient.builder().build();
         ObjectDetectionResponse detectionResponse = webClient.post()
                 .uri(objectDetectionUrl)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new AnalyzePhotoRequest(photoPath))
+                .bodyValue(requestBody)
                 .retrieve()
                 .bodyToMono(ObjectDetectionResponse.class)
                 .block();
@@ -50,6 +63,9 @@ public class IntegrationService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Song recommendation failed");
         }
 
-        return recommendedSongIds;
+        CreateRecommendationRequestDTO createRecommendationRequestDTO = new CreateRecommendationRequestDTO();
+        createRecommendationRequestDTO.setPhotoId(photo.getPhotoId());
+        createRecommendationRequestDTO.setRecommendedSongIds(recommendedSongIds.getRecommendedSongIds());
+        return recommendationService.createRecommendation(createRecommendationRequestDTO);
     }
 }

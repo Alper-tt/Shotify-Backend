@@ -27,7 +27,8 @@ public class SongEntity {
     @Column(name = "songAlbum")
     private String songAlbum;
 
-    @Column(name = "songlyrics", columnDefinition = "TEXT")
+    @Column(name = "songLyrics", columnDefinition = "TEXT")
+    @JsonIgnore
     private String songLyrics;
 
     @ManyToMany(mappedBy = "songs")

@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,9 +26,12 @@ import java.util.UUID;
 public class PhotoController {
     private final PhotoService photoService;
 
-    @PostMapping
-    @Operation(summary = "Fotoğraf oluştur")
-    public ResponseEntity<PhotoResponseDTO> uploadPhoto(@RequestParam("file") MultipartFile file, @RequestBody CreatePhotoRequestDTO requestDTO) throws IOException {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Fotoğraf yükle")
+    public ResponseEntity<PhotoResponseDTO> uploadPhoto(
+            @RequestPart("file") MultipartFile file,
+            @RequestPart("requestDTO") CreatePhotoRequestDTO requestDTO) throws IOException {
+
         String uploadDir = "/Users/alper/Desktop/Shotify/sample_images/";
         File uploadPath = new File(uploadDir);
 
@@ -42,12 +46,13 @@ public class PhotoController {
         File destinationFile = new File(uploadDir + filename);
         file.transferTo(destinationFile);
 
-        PhotoEntity photo = new PhotoEntity();
-        photo.setPhotoPath(destinationFile.getAbsolutePath());
         requestDTO.setPhotoPath(destinationFile.getAbsolutePath());
+
+        requestDTO.setUrl("/app/sample_images/"+filename);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(photoService.createPhoto(requestDTO));
     }
+
 
     @GetMapping
     @Operation(summary = "Fotoğrafları listele")

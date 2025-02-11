@@ -15,6 +15,4 @@ public class PhotoResponseDTO {
     private int userId;
     private String photoPath;
     private String url;
-    private String analysisData;
-    private RecommendationEntity recommendation;
 }

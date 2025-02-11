@@ -6,6 +6,7 @@ import com.alper.shotify.backend.entity.SongEntity;
 import com.alper.shotify.backend.model.request.CreateRecommendationRequestDTO;
 import com.alper.shotify.backend.model.request.UpdateRecommendationRequestDTO;
 import com.alper.shotify.backend.model.response.RecommendationResponseDTO;
+import com.alper.shotify.backend.model.response.SongResponseDTO;
 import com.alper.shotify.backend.repository.IPhotoRepository;
 import com.alper.shotify.backend.repository.IRecommendationRepository;
 import com.alper.shotify.backend.repository.ISongRepository;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class RecommendationService {
@@ -22,46 +25,46 @@ public class RecommendationService {
     private final IPhotoRepository photoRepository;
     private final ISongRepository songRepository;
 
+    public RecommendationResponseDTO mapToRecommendationDTO(RecommendationEntity recommendation) {
+        List<SongResponseDTO> songDTOs = recommendation.getSongs().stream()
+                .map(song -> new SongResponseDTO(song.getSongId(), song.getSongTitle(), song.getSongArtist()))
+                .collect(Collectors.toList());
+
+        return new RecommendationResponseDTO(
+                recommendation.getRecommendationId(),
+                recommendation.getPhoto().getPhotoId(),
+                songDTOs
+        );
+    }
+
     public RecommendationResponseDTO createRecommendation (CreateRecommendationRequestDTO requestDTO){
         PhotoEntity photo = photoRepository.findById(requestDTO.getPhotoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fotoğraf bulunamadı"));
 
         List<SongEntity> songs = songRepository.findAllById(requestDTO.getRecommendedSongIds());
-
         RecommendationEntity recommendationEntity = RecommendationEntity.builder()
                 .photo(photo)
                 .songs(songs)
                 .build();
         recommendationRepository.save(recommendationEntity);
+        return mapToRecommendationDTO(recommendationEntity);
+    }
 
-        return new RecommendationResponseDTO(
-                recommendationEntity.getRecommendationId(),
-                requestDTO.getPhotoId(),
-                recommendationEntity.getSongs()
-        );    }
-
-    public List<RecommendationResponseDTO> getAllRecommendations(){
-        List<RecommendationEntity> recommendations = recommendationRepository.findAll();
+    public List<RecommendationResponseDTO> getAllRecommendations() {
+        List<RecommendationEntity> recommendations = recommendationRepository.findAllWithSongs();
         if (recommendations.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
-        return recommendations.stream().map(
-                recommendation -> new RecommendationResponseDTO(
-                        recommendation.getRecommendationId(),
-                        recommendation.getPhoto().getPhotoId(),
-                        recommendation.getSongs()
-                )).toList();
+        return recommendations.stream()
+                .map(this::mapToRecommendationDTO)
+                .collect(Collectors.toList());
     }
 
     public RecommendationResponseDTO getRecommendationById(int recommendationId){
-        RecommendationEntity recommendation = recommendationRepository.findById(recommendationId)
+        RecommendationEntity recommendation = recommendationRepository.findByIdWithSongs(recommendationId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Öneri bulunamadı"));
 
-        return new RecommendationResponseDTO(
-                recommendation.getRecommendationId(),
-                recommendation.getPhoto().getPhotoId(),
-                recommendation.getSongs()
-        );
+        return mapToRecommendationDTO(recommendation);
     }
 
     public void deleteRecommendationById (int recommendationId){
@@ -81,10 +84,6 @@ public class RecommendationService {
         recommendation.setSongs(songs);
         recommendationRepository.save(recommendation);
 
-        return new RecommendationResponseDTO(
-                recommendation.getRecommendationId(),
-                requestDTO.getPhotoId(),
-                recommendation.getSongs()
-        );
+        return mapToRecommendationDTO(recommendation);
     }
 }

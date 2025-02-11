@@ -1,5 +1,6 @@
 package com.alper.shotify.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,5 +29,6 @@ public class RecommendationEntity {
             joinColumns = @JoinColumn(name = "recommendation_id"),
             inverseJoinColumns = @JoinColumn(name = "song_id")
     )
+   @JsonIgnore
     private List<SongEntity> songs;
 }
