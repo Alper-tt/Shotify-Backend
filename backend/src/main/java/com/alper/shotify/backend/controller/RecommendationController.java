@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/recommendation")
+@RequestMapping(path = "/recommendations")
 @Tag(name = "Recommendation API", description = "Recommendation işlemleri için API'ler")
 public class RecommendationController {
     private final RecommendationService recommendationService;

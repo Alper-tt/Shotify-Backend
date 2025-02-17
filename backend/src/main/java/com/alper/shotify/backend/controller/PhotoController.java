@@ -32,7 +32,7 @@ public class PhotoController {
             @RequestPart("file") MultipartFile file,
             @RequestPart("requestDTO") CreatePhotoRequestDTO requestDTO) throws IOException {
 
-        String uploadDir = "/Users/alper/Desktop/Shotify/sample_images/";
+        String uploadDir = "/Users/alper/Desktop/Shotify/Shotify-Backend/sample_images/";
         File uploadPath = new File(uploadDir);
 
         if (!uploadPath.exists()) {
