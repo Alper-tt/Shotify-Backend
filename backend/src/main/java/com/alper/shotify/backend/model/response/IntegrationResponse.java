@@ -1,11 +1,12 @@
 package com.alper.shotify.backend.model.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class IntegrationResponse {
     private List<String> detectedKeywords;

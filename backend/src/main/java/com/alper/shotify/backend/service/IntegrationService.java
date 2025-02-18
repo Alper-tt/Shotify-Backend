@@ -34,7 +34,7 @@ public class IntegrationService {
 
     public RecommendationResponseDTO analyzePhoto (AnalyzePhotoRequest requestDTO){
         PhotoEntity photo = photoRepository.findById(requestDTO.getPhotoId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Photo not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fotoğraf bulunamadı"));
 
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("url", photo.getUrl());
@@ -48,7 +48,7 @@ public class IntegrationService {
                 .bodyToMono(ObjectDetectionResponse.class)
                 .block();
         if(detectionResponse == null || detectionResponse.getKeywords() == null || detectionResponse.getKeywords().isEmpty()){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Object detection failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Nesne tanımlama başarısız oldu");
         }
 
         RecommendedSongIdsDTO recommendedSongIds = webClient.post()
@@ -60,7 +60,7 @@ public class IntegrationService {
                 .block();
 
         if (recommendedSongIds == null || recommendedSongIds.getRecommendedSongIds().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Song recommendation failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Müzik önerisi başarısız oldu");
         }
 
         CreateRecommendationRequestDTO createRecommendationRequestDTO = new CreateRecommendationRequestDTO();

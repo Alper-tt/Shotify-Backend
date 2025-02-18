@@ -1,10 +1,13 @@
 package com.alper.shotify.backend.model.response;
 
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ObjectDetectionResponse {
     private List<String> keywords;
 }
