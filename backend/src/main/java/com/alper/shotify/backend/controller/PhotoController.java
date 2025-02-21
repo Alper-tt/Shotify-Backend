@@ -1,10 +1,10 @@
 package com.alper.shotify.backend.controller;
 
-import com.alper.shotify.backend.entity.PhotoEntity;
 import com.alper.shotify.backend.model.request.CreatePhotoRequestDTO;
 import com.alper.shotify.backend.model.request.UpdatePhotoRequestDTO;
 import com.alper.shotify.backend.model.response.PhotoResponseDTO;
 import com.alper.shotify.backend.service.PhotoService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,16 +25,18 @@ import java.util.UUID;
 @Tag(name = "Photo API", description = "Fotoğraf işlemleri için API'ler")
 public class PhotoController {
     private final PhotoService photoService;
+    private final ObjectMapper objectMapper;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Fotoğraf yükle")
     public ResponseEntity<PhotoResponseDTO> uploadPhoto(
             @RequestPart("file") MultipartFile file,
-            @RequestPart("requestDTO") CreatePhotoRequestDTO requestDTO) throws IOException {
+            @RequestPart(value = "requestDTO") String requestDTOJson) throws IOException {
+
+        CreatePhotoRequestDTO requestDTO = objectMapper.readValue(requestDTOJson, CreatePhotoRequestDTO.class);
 
         String uploadDir = "/Users/alper/Desktop/Shotify/Shotify-Backend/sample_images/";
         File uploadPath = new File(uploadDir);
-
         if (!uploadPath.exists()) {
             uploadPath.mkdirs();
         }
@@ -47,13 +49,10 @@ public class PhotoController {
         file.transferTo(destinationFile);
 
         requestDTO.setPhotoPath(destinationFile.getAbsolutePath());
-
-        requestDTO.setUrl("/app/sample_images/"+filename);
+        requestDTO.setUrl("/app/sample_images/" + filename);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(photoService.createPhoto(requestDTO));
     }
-
-
     @GetMapping
     @Operation(summary = "Fotoğrafları listele")
     public ResponseEntity<List<PhotoResponseDTO>> getAllPhotos(){
@@ -79,3 +78,7 @@ public class PhotoController {
         return ResponseEntity.ok(photoService.updatePhoto(requestDTO));
     }
 }
+
+
+
+
