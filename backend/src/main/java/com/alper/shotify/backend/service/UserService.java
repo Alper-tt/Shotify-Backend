@@ -1,10 +1,14 @@
 package com.alper.shotify.backend.service;
 
+import com.alper.shotify.backend.entity.PhotoEntity;
 import com.alper.shotify.backend.entity.UserEntity;
 import com.alper.shotify.backend.model.request.UpdateUserRequestDTO;
 import com.alper.shotify.backend.model.request.CreateUserRequestDTO;
+import com.alper.shotify.backend.model.response.PhotoResponseDTO;
 import com.alper.shotify.backend.model.response.UserResponseDTO;
+import com.alper.shotify.backend.repository.IPhotoRepository;
 import com.alper.shotify.backend.repository.IUserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -75,5 +79,20 @@ public class UserService {
                 existUser.getUsername(),
                 existUser.getEmail()
         );
+    }
+
+    @Transactional
+    public List<PhotoResponseDTO> getUserPhotos(int userId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı"));
+
+        return user.getPhotos().stream().map(
+                photo -> new PhotoResponseDTO(
+                        photo.getPhotoId(),
+                        user.getUserId(),
+                        photo.getPhotoPath(),
+                        photo.getUrl()
+                )
+        ).toList();
     }
 }

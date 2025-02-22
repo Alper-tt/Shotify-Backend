@@ -78,7 +78,3 @@ public class PhotoController {
         return ResponseEntity.ok(photoService.updatePhoto(requestDTO));
     }
 }
-
-
-
-

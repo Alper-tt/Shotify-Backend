@@ -2,6 +2,7 @@ package com.alper.shotify.backend.controller;
 
 import com.alper.shotify.backend.model.request.UpdateUserRequestDTO;
 import com.alper.shotify.backend.model.request.CreateUserRequestDTO;
+import com.alper.shotify.backend.model.response.PhotoResponseDTO;
 import com.alper.shotify.backend.model.response.UserResponseDTO;
 import com.alper.shotify.backend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,6 +38,11 @@ public class UserController {
     @Operation(summary = "ID'ye göre kullanıcı getir")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable int id){
             return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    @GetMapping("/{id}/photos")
+    public ResponseEntity<List<PhotoResponseDTO>> getUserPhotos(@PathVariable int id){
+        return ResponseEntity.ok(userService.getUserPhotos(id));
     }
 
     @DeleteMapping("/{id}")
