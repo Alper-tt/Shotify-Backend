@@ -13,6 +13,7 @@ import com.alper.shotify.backend.repository.ISongRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -64,6 +65,15 @@ public class RecommendationService {
         RecommendationEntity recommendation = recommendationRepository.findByIdWithSongs(recommendationId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Öneri bulunamadı"));
 
+        return mapToRecommendationDTO(recommendation);
+    }
+
+    @Transactional
+    public RecommendationResponseDTO getRecommendationByPhotoId(int photoId){
+        PhotoEntity photo = photoRepository.findById(photoId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı"));
+        RecommendationEntity recommendation = recommendationRepository.findByPhoto(photo)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Öneri bulunamadı"));
         return mapToRecommendationDTO(recommendation);
     }
 

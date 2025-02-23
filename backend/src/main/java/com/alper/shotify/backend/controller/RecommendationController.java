@@ -31,6 +31,12 @@ public class RecommendationController {
         return ResponseEntity.ok(recommendationService.getRecommendationById(id));
     }
 
+    @GetMapping("photo/{photoId}")
+    @Operation(summary = "Fotoğraf ID'sine göre önerileri getir")
+    public ResponseEntity<RecommendationResponseDTO> getRecommendationByPhotoId(@PathVariable int photoId){
+        return ResponseEntity.ok(recommendationService.getRecommendationByPhotoId(photoId));
+    }
+
     @PostMapping
     @Operation(summary = "Öneri oluştur")
     public ResponseEntity<RecommendationResponseDTO> createRecommendation(@RequestBody CreateRecommendationRequestDTO requestDTO){

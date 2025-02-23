@@ -1,5 +1,6 @@
 package com.alper.shotify.backend.repository;
 
+import com.alper.shotify.backend.entity.PhotoEntity;
 import com.alper.shotify.backend.entity.RecommendationEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,4 +16,6 @@ public interface IRecommendationRepository extends JpaRepository<RecommendationE
     @Query("SELECT r FROM RecommendationEntity r " +
             "JOIN FETCH r.songs")
     List<RecommendationEntity> findAllWithSongs();
+
+    Optional<RecommendationEntity> findByPhoto(PhotoEntity photo);
 }

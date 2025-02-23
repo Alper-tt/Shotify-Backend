@@ -1,17 +1,15 @@
 package com.alper.shotify.backend.service;
 
-import com.alper.shotify.backend.entity.PhotoEntity;
 import com.alper.shotify.backend.entity.UserEntity;
 import com.alper.shotify.backend.model.request.UpdateUserRequestDTO;
 import com.alper.shotify.backend.model.request.CreateUserRequestDTO;
 import com.alper.shotify.backend.model.response.PhotoResponseDTO;
 import com.alper.shotify.backend.model.response.UserResponseDTO;
-import com.alper.shotify.backend.repository.IPhotoRepository;
 import com.alper.shotify.backend.repository.IUserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;

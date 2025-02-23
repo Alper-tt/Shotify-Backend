@@ -41,6 +41,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/photos")
+    @Operation(summary = "Kullanıcının fotoğraflarını getir")
     public ResponseEntity<List<PhotoResponseDTO>> getUserPhotos(@PathVariable int id){
         return ResponseEntity.ok(userService.getUserPhotos(id));
     }
