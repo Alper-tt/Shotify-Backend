@@ -8,6 +8,7 @@ import com.alper.shotify.backend.model.response.PhotoResponseDTO;
 import com.alper.shotify.backend.repository.IPhotoRepository;
 import com.alper.shotify.backend.repository.IUserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,6 +21,7 @@ public class PhotoService {
     private final IPhotoRepository photoRepository;
     private final IUserRepository userRepository;
 
+    @CacheEvict(value = "photos", key = "#requestDTO.userId")
     public PhotoResponseDTO createPhoto (CreatePhotoRequestDTO requestDTO){
         UserEntity user = userRepository.findById(requestDTO.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı"));

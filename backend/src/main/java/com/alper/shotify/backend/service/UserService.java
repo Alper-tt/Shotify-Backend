@@ -7,6 +7,7 @@ import com.alper.shotify.backend.model.response.PhotoResponseDTO;
 import com.alper.shotify.backend.model.response.UserResponseDTO;
 import com.alper.shotify.backend.repository.IUserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,6 +81,7 @@ public class UserService {
     }
 
     @Transactional
+    @Cacheable(value = "photos", key = "#userId")
     public List<PhotoResponseDTO> getUserPhotos(int userId) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı"));
