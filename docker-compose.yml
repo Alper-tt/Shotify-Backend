@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   object-detection:
     build:
@@ -8,7 +10,15 @@ services:
       - "5005:5005"
     volumes:
       - ./sample_images:/app/sample_images
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
     restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
 
   song-recommendation:
     build:
@@ -19,4 +29,32 @@ services:
       - "5003:5003"
     volumes:
       - ./turkish_song_lyrics.csv:/app/turkish_song_lyrics.csv
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
     restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

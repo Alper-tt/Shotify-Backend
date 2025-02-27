@@ -53,6 +53,7 @@ public class PhotoController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(photoService.createPhoto(requestDTO));
     }
+
     @GetMapping
     @Operation(summary = "Fotoğrafları listele")
     public ResponseEntity<List<PhotoResponseDTO>> getAllPhotos(){

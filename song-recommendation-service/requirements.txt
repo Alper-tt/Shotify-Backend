@@ -2,3 +2,4 @@ flask
 pandas
 nltk
 scikit-learn
+pika

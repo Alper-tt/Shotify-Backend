@@ -6,6 +6,9 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import pika
+import json
+import threading
 
 df = pd.read_csv('turkish_song_lyrics.csv')
 try:
@@ -48,10 +51,61 @@ def recommend_songs_route():
 
     keywords = data['keywords']
     recommended = get_recommended_songs(' '.join(keywords))
-    
     song_ids = recommended['songId'].tolist()
-    
     return jsonify({"recommendedSongIds": song_ids})
 
+RABBITMQ_HOST = 'rabbitmq'
+RABBITMQ_USERNAME = 'guest'
+RABBITMQ_PASSWORD = 'guest'
+DETECTION_RESULTS_QUEUE = 'detection_results_queue'
+RECOMMENDATION_QUEUE = 'recommendation_queue'
+
+def publish_recommendation(result):
+    """Öneri sonuçlarını recommendation_queue'ya gönderir."""
+    credentials = pika.PlainCredentials(RABBITMQ_USERNAME, RABBITMQ_PASSWORD)
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials)
+    )
+    channel = connection.channel()
+    channel.queue_declare(queue=RECOMMENDATION_QUEUE, durable=True)
+    message = json.dumps(result)
+    channel.basic_publish(exchange='', routing_key=RECOMMENDATION_QUEUE, body=message)
+    connection.close()
+    print("Published recommendation:", message)
+
+def rabbitmq_callback(ch, method, properties, body):
+    try:
+        data = json.loads(body)
+        print("Received detection results from queue:", data)
+        if 'keywords' in data:
+            keywords = data['keywords']
+            recommended_df = get_recommended_songs(' '.join(keywords))
+            song_ids = recommended_df['songId'].tolist()
+            result = {"recommendedSongIds": song_ids}
+            publish_recommendation(result)
+        else:
+            print("No 'keywords' found in the message")
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+    except Exception as e:
+        print("Error processing message:", e)
+        ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
+
+def start_rabbitmq_consumer():
+    credentials = pika.PlainCredentials(RABBITMQ_USERNAME, RABBITMQ_PASSWORD)
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials)
+    )
+    channel = connection.channel()
+    channel.queue_declare(queue=DETECTION_RESULTS_QUEUE, durable=True)
+    channel.basic_qos(prefetch_count=1)
+    channel.basic_consume(queue=DETECTION_RESULTS_QUEUE, on_message_callback=rabbitmq_callback)
+    print("Started consuming from", DETECTION_RESULTS_QUEUE)
+    channel.start_consuming()
+
+def start_consumer_in_thread():
+    consumer_thread = threading.Thread(target=start_rabbitmq_consumer, daemon=True)
+    consumer_thread.start()
+
 if __name__ == '__main__':
+    start_consumer_in_thread()
     app.run(host="0.0.0.0", port=5003)

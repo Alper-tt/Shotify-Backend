@@ -2,11 +2,13 @@ package com.alper.shotify.backend.service;
 
 import com.alper.shotify.backend.entity.PhotoEntity;
 import com.alper.shotify.backend.entity.UserEntity;
+import com.alper.shotify.backend.model.messages.PhotoMessage;
 import com.alper.shotify.backend.model.request.CreatePhotoRequestDTO;
 import com.alper.shotify.backend.model.request.UpdatePhotoRequestDTO;
 import com.alper.shotify.backend.model.response.PhotoResponseDTO;
 import com.alper.shotify.backend.repository.IPhotoRepository;
 import com.alper.shotify.backend.repository.IUserRepository;
+import com.alper.shotify.backend.service.rabbitmqServices.RabbitMQSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
@@ -35,6 +37,7 @@ public class PhotoService {
                 .build();
 
         PhotoEntity savedPhoto = photoRepository.save(photo);
+
         return new PhotoResponseDTO(savedPhoto.getPhotoId(),
                 savedPhoto.getUser().getUserId(),
                 savedPhoto.getPhotoPath(),

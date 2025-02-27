@@ -22,7 +22,6 @@ public class IntegrationController {
     @PostMapping("/analyze-photo")
     @Operation(summary = "Fotoğrafı analiz et")
     public ResponseEntity<RecommendationResponseDTO> analyzePhoto(@RequestBody AnalyzePhotoRequest analyzePhotoRequest) {
-        RecommendationResponseDTO response = integrationService.analyzePhoto(analyzePhotoRequest);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(integrationService.analyzePhoto(analyzePhotoRequest));
     }
 }
