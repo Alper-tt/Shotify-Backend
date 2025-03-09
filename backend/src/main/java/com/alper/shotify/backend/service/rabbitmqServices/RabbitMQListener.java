@@ -6,8 +6,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.alper.shotify.backend.config.RabbitMQConfig;
-import com.alper.shotify.backend.entity.PhotoAnalysisProcess;
-import com.alper.shotify.backend.repository.IPhotoAnalysisProcessRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
@@ -36,4 +34,5 @@ public class RabbitMQListener {
             }
         }
     }
+
 }

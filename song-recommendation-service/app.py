@@ -61,7 +61,6 @@ DETECTION_RESULTS_QUEUE = 'detection_results_queue'
 RECOMMENDATION_QUEUE = 'recommendation_queue'
 
 def publish_recommendation(result):
-    """Öneri sonuçlarını recommendation_queue'ya gönderir."""
     credentials = pika.PlainCredentials(RABBITMQ_USERNAME, RABBITMQ_PASSWORD)
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials)

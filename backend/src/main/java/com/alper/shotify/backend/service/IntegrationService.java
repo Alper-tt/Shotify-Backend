@@ -1,12 +1,10 @@
 package com.alper.shotify.backend.service;
 
-import com.alper.shotify.backend.entity.PhotoAnalysisProcess;
 import com.alper.shotify.backend.entity.PhotoEntity;
 import com.alper.shotify.backend.model.messages.PhotoMessage;
 import com.alper.shotify.backend.model.request.AnalyzePhotoRequest;
 import com.alper.shotify.backend.model.request.CreateRecommendationRequestDTO;
 import com.alper.shotify.backend.model.response.RecommendationResponseDTO;
-import com.alper.shotify.backend.repository.IPhotoAnalysisProcessRepository;
 import com.alper.shotify.backend.repository.IPhotoRepository;
 import com.alper.shotify.backend.service.rabbitmqServices.RabbitMQListener;
 import com.alper.shotify.backend.service.rabbitmqServices.RabbitMQSender;
@@ -36,7 +34,7 @@ public class IntegrationService {
         CompletableFuture<List<Integer>> future = rabbitMQListener.waitForRecommendation(photo.getPhotoId());
         List<Integer> recommendedSongIds;
         try {
-            recommendedSongIds = future.get(10, TimeUnit.SECONDS); // 10 saniye timeout
+            recommendedSongIds = future.get(10, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.REQUEST_TIMEOUT, "Müzik önerisi zaman aşımına uğradı");
         }

@@ -1,0 +1,127 @@
+import os
+import tempfile
+import subprocess
+import json
+import requests
+from flask import Flask, request, jsonify
+import pika
+from threading import Thread
+
+app = Flask(__name__)
+
+VIDEO_CREATION_RESULTS_QUEUE = "video_creation_results_queue"
+
+def download_file(url: str, ext: str) -> str:
+    response = requests.get(url, stream=True)
+    if response.status_code == 200:
+        tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=ext)
+        with open(tmp_file.name, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+        return tmp_file.name
+    else:
+        raise Exception(f"Failed to download file from {url}, status code: {response.status_code}")
+
+def create_video_local(photo_path: str, audio_path: str) -> str:
+    temp_dir = tempfile.gettempdir()
+    output_video = os.path.join(temp_dir, "output_video.mp4")
+    command = [
+        "ffmpeg",
+        "-y",
+        "-loop", "1",
+        "-i", photo_path,
+        "-i", audio_path,
+        "-c:v", "libx264",
+        "-tune", "stillimage",
+        "-c:a", "aac",
+        "-b:a", "192k",
+        "-pix_fmt", "yuv420p",
+        "-shortest",
+        output_video
+    ]
+    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    if result.returncode != 0:
+        raise Exception(f"FFmpeg error: {result.stderr}")
+    return output_video
+
+def process_video_request(photo_path: str, audio_url: str) -> str:
+    photo_downloaded = False
+    if photo_path.startswith("http"):
+        local_photo = download_file(photo_path, ".jpg")
+        photo_downloaded = True
+    else:
+        local_photo = photo_path
+
+    local_audio = download_file(audio_url, ".mp3")
+
+    video_path = create_video_local(local_photo, local_audio)
+
+    if photo_downloaded and os.path.exists(local_photo):
+        os.remove(local_photo)
+        print(f"Deleted temporary photo file: {local_photo}")
+    if os.path.exists(local_audio):
+        os.remove(local_audio)
+        print(f"Deleted temporary audio file: {local_audio}")
+
+    return video_path
+
+def publish_video_result(video_url: str, channel, correlation_id: str = None):
+    result_message = json.dumps({"videoUrl": video_url})
+    props = pika.BasicProperties()
+    if correlation_id:
+        props.correlation_id = correlation_id
+    channel.basic_publish(
+        exchange="",
+        routing_key="video_creation_results_queue",
+        properties=props,
+        body=result_message
+    )
+    print(f"Published video result to queue 'video_creation_results_queue' with correlation_id: {correlation_id}.")
+
+def rabbitmq_callback(ch, method, properties, body):
+    try:
+        data = json.loads(body)
+        photo_path = data.get("photoPath")
+        audio_url = data.get("audioUrl")
+        if not photo_path or not audio_url:
+            print("Missing photoPath or audioUrl in message.")
+            ch.basic_ack(delivery_tag=method.delivery_tag)
+            return
+
+        print("Received video creation request:", data)
+        video_path = process_video_request(photo_path, audio_url)
+        print("Video created at:", video_path)
+        correlation_id = properties.correlation_id if properties and properties.correlation_id else None
+        publish_video_result(video_path, ch, correlation_id)
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+    except Exception as e:
+        print("Error processing video request:", e)
+        ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
+
+
+def start_rabbitmq_consumer():
+    rabbitmq_host = os.getenv("RABBITMQ_HOST", "rabbitmq")
+    credentials = pika.PlainCredentials("guest", "guest")
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=rabbitmq_host, credentials=credentials))
+    channel = connection.channel()
+    channel.queue_declare(queue="video_creation_queue", durable=True)
+    channel.queue_declare(queue=VIDEO_CREATION_RESULTS_QUEUE, durable=True)
+    channel.basic_consume(queue="video_creation_queue", on_message_callback=rabbitmq_callback)
+    print("Video creation consumer started.")
+    channel.start_consuming()
+
+@app.route('/createVideo', methods=['POST'])
+def create_video_endpoint():
+    data = request.get_json()
+    if not data or "photoPath" not in data or "audioUrl" not in data:
+        return jsonify({"error": "photoPath and audioUrl required"}), 400
+    try:
+        video_path = process_video_request(data["photoPath"], data["audioUrl"])
+        return jsonify({"videoUrl": video_path})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == "__main__":
+    consumer_thread = Thread(target=start_rabbitmq_consumer, daemon=True)
+    consumer_thread.start()
+    app.run(host="0.0.0.0", port=5007)

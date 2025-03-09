@@ -39,6 +39,23 @@ services:
     networks:
       - backend
 
+  video-creation:
+    build:
+      context: ./video-creation-service
+      dockerfile: Dockerfile
+    container_name: video-creation
+    ports:
+      - "5007:5007"
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
+
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq

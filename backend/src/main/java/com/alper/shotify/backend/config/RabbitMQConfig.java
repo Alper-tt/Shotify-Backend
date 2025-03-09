@@ -15,6 +15,9 @@ public class RabbitMQConfig {
     public static final String OBJECT_DETECTION_QUEUE = "object_detection_queue";
     public static final String DETECTION_RESULTS_QUEUE = "detection_results_queue";
     public static final String RECOMMENDATION_QUEUE = "recommendation_queue";
+    public static final String VIDEO_CREATION_QUEUE = "video_creation_queue";
+    public static final String VIDEO_CREATION_RESULTS_QUEUE = "video_creation_results_queue";
+
 
     @Bean
     public CachingConnectionFactory connectionFactory() {
@@ -37,6 +40,16 @@ public class RabbitMQConfig {
     @Bean
     public Queue recommendationQueue() {
         return new Queue(RECOMMENDATION_QUEUE, true);
+    }
+
+    @Bean
+    public Queue videoCreationQueue() {
+        return new Queue(VIDEO_CREATION_QUEUE, true);
+    }
+
+    @Bean
+    public Queue videoCreationResultsQueue() {
+        return new Queue(VIDEO_CREATION_RESULTS_QUEUE, true);
     }
 
     @Bean
