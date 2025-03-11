@@ -46,6 +46,8 @@ services:
     container_name: video-creation
     ports:
       - "5007:5007"
+    volumes:
+      - ./shotify-d5ae8-firebase-adminsdk-fbsvc-f29a061bb1.json:/app/shotify-d5ae8-firebase-adminsdk-fbsvc-f29a061bb1.json
     environment:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672

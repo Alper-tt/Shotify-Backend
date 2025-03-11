@@ -3,11 +3,21 @@ import tempfile
 import subprocess
 import json
 import requests
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import pika
 from threading import Thread
+import firebase_admin
+from firebase_admin import credentials, storage
+import uuid
+
 
 app = Flask(__name__)
+
+if not firebase_admin._apps:
+    cred = credentials.Certificate("/app/shotify-d5ae8-firebase-adminsdk-fbsvc-f29a061bb1.json")
+    firebase_admin.initialize_app(cred, {
+        'storageBucket': 'shotify-d5ae8.firebasestorage.app'
+    })
 
 VIDEO_CREATION_RESULTS_QUEUE = "video_creation_results_queue"
 
@@ -24,7 +34,8 @@ def download_file(url: str, ext: str) -> str:
 
 def create_video_local(photo_path: str, audio_path: str) -> str:
     temp_dir = tempfile.gettempdir()
-    output_video = os.path.join(temp_dir, "output_video.mp4")
+    output_file_name = f"{uuid.uuid4().hex}.mp4"
+    output_video = os.path.join(temp_dir, output_file_name)
     command = [
         "ffmpeg",
         "-y",
@@ -43,6 +54,14 @@ def create_video_local(photo_path: str, audio_path: str) -> str:
     if result.returncode != 0:
         raise Exception(f"FFmpeg error: {result.stderr}")
     return output_video
+
+def upload_video_to_firebase(video_path: str) -> str:
+    bucket = storage.bucket()
+    file_name = os.path.basename(video_path)
+    blob = bucket.blob(f"videos/{file_name}")
+    blob.upload_from_filename(video_path)
+    blob.make_public()
+    return blob.public_url
 
 def process_video_request(photo_path: str, audio_url: str) -> str:
     photo_downloaded = False
@@ -63,7 +82,12 @@ def process_video_request(photo_path: str, audio_url: str) -> str:
         os.remove(local_audio)
         print(f"Deleted temporary audio file: {local_audio}")
 
-    return video_path
+    firebase_video_url = upload_video_to_firebase(video_path)
+    if os.path.exists(video_path):
+        os.remove(video_path)
+        print(f"Deleted temporary video file: {video_path}")
+
+    return firebase_video_url
 
 def publish_video_result(video_url: str, channel, correlation_id: str = None):
     result_message = json.dumps({"videoUrl": video_url})
@@ -72,11 +96,11 @@ def publish_video_result(video_url: str, channel, correlation_id: str = None):
         props.correlation_id = correlation_id
     channel.basic_publish(
         exchange="",
-        routing_key="video_creation_results_queue",
+        routing_key=VIDEO_CREATION_RESULTS_QUEUE,
         properties=props,
         body=result_message
     )
-    print(f"Published video result to queue 'video_creation_results_queue' with correlation_id: {correlation_id}.")
+    print(f"Published video result with correlation_id: {correlation_id}.")
 
 def rabbitmq_callback(ch, method, properties, body):
     try:
@@ -89,15 +113,14 @@ def rabbitmq_callback(ch, method, properties, body):
             return
 
         print("Received video creation request:", data)
-        video_path = process_video_request(photo_path, audio_url)
-        print("Video created at:", video_path)
+        video_url = process_video_request(photo_path, audio_url)
+        print("Video created and uploaded to Firebase at:", video_url)
         correlation_id = properties.correlation_id if properties and properties.correlation_id else None
-        publish_video_result(video_path, ch, correlation_id)
+        publish_video_result(video_url, ch, correlation_id)
         ch.basic_ack(delivery_tag=method.delivery_tag)
     except Exception as e:
         print("Error processing video request:", e)
         ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
-
 
 def start_rabbitmq_consumer():
     rabbitmq_host = os.getenv("RABBITMQ_HOST", "rabbitmq")
@@ -116,8 +139,8 @@ def create_video_endpoint():
     if not data or "photoPath" not in data or "audioUrl" not in data:
         return jsonify({"error": "photoPath and audioUrl required"}), 400
     try:
-        video_path = process_video_request(data["photoPath"], data["audioUrl"])
-        return jsonify({"videoUrl": video_path})
+        video_url = process_video_request(data["photoPath"], data["audioUrl"])
+        return jsonify({"videoUrl": video_url})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

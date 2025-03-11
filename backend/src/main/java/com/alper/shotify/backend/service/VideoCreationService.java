@@ -1,6 +1,7 @@
 package com.alper.shotify.backend.service;
 
 import com.alper.shotify.backend.config.RabbitMQConfig;
+import com.alper.shotify.backend.model.response.VideoUrlResponseDTO;
 import com.alper.shotify.backend.service.rabbitmqServices.VideoResultListener;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
@@ -10,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +23,7 @@ public class VideoCreationService {
     private final VideoResultListener videoResultListener;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public String createVideo(String photoPath, String audioUrl) {
+    public VideoUrlResponseDTO createVideo(String photoPath, String audioUrl) {
         try {
             String correlationId = UUID.randomUUID().toString();
 
@@ -35,9 +38,12 @@ public class VideoCreationService {
 
             rabbitTemplate.send(RabbitMQConfig.VIDEO_CREATION_QUEUE, message);
 
-            return videoResultListener.getResponse(correlationId, 10000);
+            String videoUrl = videoResultListener.getResponse(correlationId, 10000);
+            VideoUrlResponseDTO videoUrlResponseDTO = new VideoUrlResponseDTO();
+            videoUrlResponseDTO.setVideoUrl(videoUrl);
+            return videoUrlResponseDTO;
         } catch (Exception e) {
-            throw new RuntimeException("Video oluşturma isteği sırasında hata: " + e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create video", e);
         }
     }
 }
