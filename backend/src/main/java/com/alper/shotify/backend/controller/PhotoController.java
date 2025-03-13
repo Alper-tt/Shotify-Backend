@@ -4,6 +4,7 @@ import com.alper.shotify.backend.model.request.CreatePhotoRequestDTO;
 import com.alper.shotify.backend.model.request.UpdatePhotoRequestDTO;
 import com.alper.shotify.backend.model.response.PhotoResponseDTO;
 import com.alper.shotify.backend.service.PhotoService;
+import com.alper.shotify.backend.service.firabaseServices.FirebaseStorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,10 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +25,7 @@ import java.util.UUID;
 public class PhotoController {
     private final PhotoService photoService;
     private final ObjectMapper objectMapper;
+    private final FirebaseStorageService firebaseStorageService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Fotoğraf yükle")
@@ -34,24 +34,8 @@ public class PhotoController {
             @RequestPart(value = "requestDTO") String requestDTOJson) throws IOException {
 
         CreatePhotoRequestDTO requestDTO = objectMapper.readValue(requestDTOJson, CreatePhotoRequestDTO.class);
+        return ResponseEntity.status(HttpStatus.CREATED).body(photoService.createPhoto(requestDTO, file));
 
-        String uploadDir = "/Users/alper/Desktop/Shotify/Shotify-Backend/sample_images/";
-        File uploadPath = new File(uploadDir);
-        if (!uploadPath.exists()) {
-            uploadPath.mkdirs();
-        }
-
-        String originalFilename = file.getOriginalFilename();
-        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String filename = UUID.randomUUID() + extension;
-
-        File destinationFile = new File(uploadDir + filename);
-        file.transferTo(destinationFile);
-
-        requestDTO.setPhotoPath(destinationFile.getAbsolutePath());
-        requestDTO.setUrl("/app/sample_images/" + filename);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(photoService.createPhoto(requestDTO));
     }
 
     @GetMapping

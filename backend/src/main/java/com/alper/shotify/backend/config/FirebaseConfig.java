@@ -19,7 +19,7 @@ public class FirebaseConfig {
 
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .setStorageBucket("shotify-d5ae8.appspot.com")
+                .setStorageBucket("shotify-d5ae8.firebasestorage.app")
                 .build();
 
         if (FirebaseApp.getApps().isEmpty()) {

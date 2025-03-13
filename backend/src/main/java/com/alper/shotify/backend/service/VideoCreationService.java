@@ -1,6 +1,7 @@
 package com.alper.shotify.backend.service;
 
 import com.alper.shotify.backend.config.RabbitMQConfig;
+import com.alper.shotify.backend.model.request.CreateVideoRequestDTO;
 import com.alper.shotify.backend.model.response.VideoUrlResponseDTO;
 import com.alper.shotify.backend.service.rabbitmqServices.VideoResultListener;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,13 +24,13 @@ public class VideoCreationService {
     private final VideoResultListener videoResultListener;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public VideoUrlResponseDTO createVideo(String photoPath, String audioUrl) {
+    public VideoUrlResponseDTO createVideo(CreateVideoRequestDTO request) {
         try {
             String correlationId = UUID.randomUUID().toString();
 
             Map<String, String> messageMap = new HashMap<>();
-            messageMap.put("photoPath", photoPath);
-            messageMap.put("audioUrl", audioUrl);
+            messageMap.put("photoPath", request.getPhotoPath());
+            messageMap.put("audioUrl", request.getAudioUrl());
             byte[] messageBody = objectMapper.writeValueAsBytes(messageMap);
 
             MessageProperties props = new MessageProperties();
@@ -38,7 +39,7 @@ public class VideoCreationService {
 
             rabbitTemplate.send(RabbitMQConfig.VIDEO_CREATION_QUEUE, message);
 
-            String videoUrl = videoResultListener.getResponse(correlationId, 10000);
+            String videoUrl = videoResultListener.getResponse(correlationId, 60000);
             VideoUrlResponseDTO videoUrlResponseDTO = new VideoUrlResponseDTO();
             videoUrlResponseDTO.setVideoUrl(videoUrl);
             return videoUrlResponseDTO;

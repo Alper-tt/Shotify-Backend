@@ -8,13 +8,16 @@ import com.alper.shotify.backend.model.request.UpdatePhotoRequestDTO;
 import com.alper.shotify.backend.model.response.PhotoResponseDTO;
 import com.alper.shotify.backend.repository.IPhotoRepository;
 import com.alper.shotify.backend.repository.IUserRepository;
+import com.alper.shotify.backend.service.firabaseServices.FirebaseStorageService;
 import com.alper.shotify.backend.service.rabbitmqServices.RabbitMQSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -22,17 +25,20 @@ import java.util.List;
 public class PhotoService {
     private final IPhotoRepository photoRepository;
     private final IUserRepository userRepository;
+    private final FirebaseStorageService firebaseStorageService;
 
     @CacheEvict(value = "photos", key = "#requestDTO.userId")
-    public PhotoResponseDTO createPhoto (CreatePhotoRequestDTO requestDTO){
+    public PhotoResponseDTO createPhoto (CreatePhotoRequestDTO requestDTO, MultipartFile photoFile) throws IOException {
         UserEntity user = userRepository.findById(requestDTO.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı"));
 
+        String photoUrl = firebaseStorageService.uploadFile(photoFile, "photos");
+
         PhotoEntity photo = PhotoEntity.builder()
-                .url(requestDTO.getUrl())
+                .url(photoUrl)
                 .analysisData(requestDTO.getAnalysisData())
                 .recommendations(requestDTO.getRecommendation())
-                .photoPath(requestDTO.getPhotoPath())
+                .photoPath(photoUrl)
                 .user(user)
                 .build();
 

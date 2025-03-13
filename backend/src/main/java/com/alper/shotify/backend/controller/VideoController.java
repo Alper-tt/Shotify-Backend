@@ -16,6 +16,6 @@ public class VideoController {
 
     @PostMapping("/create")
     public ResponseEntity<VideoUrlResponseDTO> createVideo(@RequestBody CreateVideoRequestDTO request) {
-        return ResponseEntity.ok().body(videoCreationService.createVideo(request.getPhotoPath(), request.getAudioUrl()));
+        return ResponseEntity.ok(videoCreationService.createVideo(request));
     }
 }
