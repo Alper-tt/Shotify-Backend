@@ -10,6 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateUserRequestDTO {
-    private String username;
+    private String firebaseUid;
     private String email;
 }

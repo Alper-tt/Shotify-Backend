@@ -24,8 +24,8 @@ public class UserController {
 
     @PostMapping
     @Operation(summary = "Kullanıcı oluştur")
-    public ResponseEntity<UserResponseDTO> createUser(@RequestBody CreateUserRequestDTO requestDTO){
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(requestDTO));
+    public ResponseEntity<UserResponseDTO> getOrCreateUser(@RequestBody CreateUserRequestDTO requestDTO){
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.getOrCreateUser(requestDTO));
     }
 
     @GetMapping

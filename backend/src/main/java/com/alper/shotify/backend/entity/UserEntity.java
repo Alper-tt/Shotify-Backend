@@ -18,8 +18,8 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
 
-    @Column(name = "Username")
-    private String username;
+    @Column(nullable = false, unique = true)
+    private String firebaseUid;
 
     @Column(name = "Email")
     private String email;

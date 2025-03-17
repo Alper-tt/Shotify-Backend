@@ -13,9 +13,7 @@ public class FirebaseStorageService {
 
     public String uploadFile(MultipartFile file, String destinationFolder) throws IOException {
         String originalFilename = file.getOriginalFilename();
-        // String fileName = UUID.randomUUID().toString() + originalFilename.substring(originalFilename.lastIndexOf("."));
         String fileName = originalFilename;
-        // Blob yolu: destinationFolder/filename
         String blobString = destinationFolder + "/" + fileName;
 
         StorageClient.getInstance().bucket().create(blobString, file.getBytes(), file.getContentType());

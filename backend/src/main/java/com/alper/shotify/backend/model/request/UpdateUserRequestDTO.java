@@ -11,6 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UpdateUserRequestDTO {
     private int userId;
-    private String username;
+    private String firebaseUid;
     private String email;
 }

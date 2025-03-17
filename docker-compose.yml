@@ -47,7 +47,7 @@ services:
     ports:
       - "5007:5007"
     volumes:
-      - ./shotify-d5ae8-firebase-adminsdk-fbsvc-381075e8be.json:/app/shotify-d5ae8-firebase-adminsdk-fbsvc-381075e8be.json
+      - ./shotify-d5ae8-firebase-adminsdk-fbsvc-18e55fc7dd.json:/app/shotify-d5ae8-firebase-adminsdk-fbsvc-18e55fc7dd.json
     environment:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672

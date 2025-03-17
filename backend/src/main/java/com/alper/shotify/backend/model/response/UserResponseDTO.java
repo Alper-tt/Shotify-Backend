@@ -11,6 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserResponseDTO {
     private int userId;
-    private String username;
+    private String firebaseUid;
     private String email;
 }

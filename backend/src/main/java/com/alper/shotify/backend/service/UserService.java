@@ -20,21 +20,27 @@ import java.util.List;
 public class UserService {
     private final IUserRepository userRepository;
 
-    public UserResponseDTO createUser(CreateUserRequestDTO requestDTO) {
-        if(userRepository.existsByUsername(requestDTO.getUsername()) || userRepository.existsByEmail(requestDTO.getEmail()))
+    public UserResponseDTO getOrCreateUser(CreateUserRequestDTO requestDTO) {
+        if(userRepository.existsByFirebaseUid(requestDTO.getFirebaseUid()))
         {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Kullanıcı adı veya E-posta zaten mevcut");
+            UserEntity user = userRepository.findByFirebaseUid(requestDTO.getFirebaseUid());
+            return new UserResponseDTO(
+                    user.getUserId(),
+                    user.getFirebaseUid(),
+                    user.getEmail()
+            );
+        }else {
+            UserEntity user = UserEntity.builder()
+                    .firebaseUid(requestDTO.getFirebaseUid())
+                    .email(requestDTO.getEmail())
+                    .build();
+            userRepository.save(user);
+            return new UserResponseDTO(
+                    user.getUserId(),
+                    user.getFirebaseUid(),
+                    user.getEmail()
+            );
         }
-        UserEntity user = UserEntity.builder()
-                .username(requestDTO.getUsername())
-                .email(requestDTO.getEmail())
-                .build();
-        userRepository.save(user);
-        return new UserResponseDTO(
-                user.getUserId(),
-                user.getUsername(),
-                user.getEmail()
-        );
     }
 
     public List<UserResponseDTO> getAllUsers(){
@@ -45,7 +51,7 @@ public class UserService {
         return users.stream()
                 .map(user -> new UserResponseDTO(
                         user.getUserId(),
-                        user.getUsername(),
+                        user.getFirebaseUid(),
                         user.getEmail()
                 )).toList();
     }
@@ -55,7 +61,7 @@ public class UserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı"));
         return new UserResponseDTO(
                 user.getUserId(),
-                user.getUsername(),
+                user.getFirebaseUid(),
                 user.getEmail()
         );
     }
@@ -70,12 +76,12 @@ public class UserService {
     public UserResponseDTO update(UpdateUserRequestDTO updateUserRequestDTO) {
         UserEntity existUser = userRepository.findById(updateUserRequestDTO.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı"));
-        existUser.setUsername(updateUserRequestDTO.getUsername());
+        existUser.setFirebaseUid(updateUserRequestDTO.getFirebaseUid());
         existUser.setEmail(updateUserRequestDTO.getEmail());
         userRepository.save(existUser);
         return new UserResponseDTO(
                 existUser.getUserId(),
-                existUser.getUsername(),
+                existUser.getFirebaseUid(),
                 existUser.getEmail()
         );
     }

@@ -71,7 +71,7 @@ public class RecommendationService {
     @Transactional
     public RecommendationResponseDTO getRecommendationByPhotoId(int photoId){
         PhotoEntity photo = photoRepository.findById(photoId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fotoğraf bulunamadı"));
         RecommendationEntity recommendation = recommendationRepository.findByPhoto(photo)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Öneri bulunamadı"));
         return mapToRecommendationDTO(recommendation);
