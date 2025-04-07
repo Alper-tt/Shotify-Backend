@@ -8,8 +8,6 @@ services:
     container_name: object-detection
     ports:
       - "5005:5005"
-    volumes:
-      - ./sample_images:/app/sample_images
     environment:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672

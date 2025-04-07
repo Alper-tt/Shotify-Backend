@@ -14,7 +14,7 @@ import uuid
 app = Flask(__name__)
 
 if not firebase_admin._apps:
-    cred = credentials.Certificate("/app/shotify-d5ae8-firebase-adminsdk-fbsvc-18e55fc7dd.json")
+    cred = credentials.Certificate("/app/shotify-d5ae8-firebase-adminsdk-fbsvc-c583419d0d.json")
     firebase_admin.initialize_app(cred, {
         'storageBucket': 'shotify-d5ae8.firebasestorage.app'
     })
