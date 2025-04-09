@@ -4,7 +4,7 @@ import com.alper.shotify.backend.model.request.CreatePhotoRequestDTO;
 import com.alper.shotify.backend.model.request.UpdatePhotoRequestDTO;
 import com.alper.shotify.backend.model.response.PhotoResponseDTO;
 import com.alper.shotify.backend.service.PhotoService;
-import com.alper.shotify.backend.service.firabaseServices.FirebaseStorageService;
+import com.alper.shotify.backend.service.firebaseServices.FirebaseStorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

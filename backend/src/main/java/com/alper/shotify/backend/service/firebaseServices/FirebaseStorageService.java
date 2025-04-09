@@ -1,4 +1,4 @@
-package com.alper.shotify.backend.service.firabaseServices;
+package com.alper.shotify.backend.service.firebaseServices;
 
 import com.google.firebase.cloud.StorageClient;
 import org.springframework.stereotype.Service;
