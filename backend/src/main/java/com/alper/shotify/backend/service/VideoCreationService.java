@@ -40,7 +40,7 @@ public class VideoCreationService {
 
             rabbitTemplate.send(RabbitMQConfig.VIDEO_CREATION_QUEUE, message);
 
-            String videoUrl = videoResultListener.getResponse(correlationId, 70000);
+            String videoUrl = videoResultListener.getResponse(correlationId, 90000);
             VideoUrlResponseDTO videoUrlResponseDTO = new VideoUrlResponseDTO();
             videoUrlResponseDTO.setVideoUrl(videoUrl);
             return videoUrlResponseDTO;

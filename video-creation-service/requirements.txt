@@ -2,3 +2,4 @@ Flask
 requests
 pika
 firebase_admin
+Pillow

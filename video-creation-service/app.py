@@ -9,12 +9,12 @@ from threading import Thread
 import firebase_admin
 from firebase_admin import credentials, storage
 import uuid
-
+from PIL import Image, ExifTags
 
 app = Flask(__name__)
 
 if not firebase_admin._apps:
-    cred = credentials.Certificate("/app/shotify-d5ae8-firebase-adminsdk-fbsvc-c95f2ee4cf.json")
+    cred = credentials.Certificate("/app/shotify-d5ae8-firebase-adminsdk-fbsvc-9d5f8462d8.json")
     firebase_admin.initialize_app(cred, {
         'storageBucket': 'shotify-d5ae8.firebasestorage.app'
     })
@@ -31,6 +31,33 @@ def download_file(url: str, ext: str) -> str:
         return tmp_file.name
     else:
         raise Exception(f"Failed to download file from {url}, status code: {response.status_code}")
+    
+def resize_image(image_path: str, max_resolution=(1920, 1080)) -> str:
+    try:
+        img = Image.open(image_path)
+
+        try:
+            exif = img._getexif()
+            if exif:
+                for tag, value in exif.items():
+                    decoded = ExifTags.TAGS.get(tag, tag)
+                    if decoded == "Orientation":
+                        if value == 3:
+                            img = img.rotate(180, expand=True)
+                        elif value == 6:
+                            img = img.rotate(270, expand=True)
+                        elif value == 8:
+                            img = img.rotate(90, expand=True)
+        except Exception as e:
+            print(f"Exif rotation skip: {e}")
+
+        img.thumbnail(max_resolution)
+        resized_path = image_path.replace(".jpg", "_resized.jpg")
+        img.save(resized_path, "JPEG")
+        return resized_path
+    except Exception as e:
+        print(f"Image resize failed: {e}")
+        return image_path
 
 def create_video_local(photo_path: str, audio_path: str) -> str:
     temp_dir = tempfile.gettempdir()
@@ -47,9 +74,11 @@ def create_video_local(photo_path: str, audio_path: str) -> str:
         "-c:a", "aac",
         "-b:a", "192k",
         "-pix_fmt", "yuv420p",
+        "-s", "1920x1080",
         "-shortest",
         output_video
     ]
+
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     if result.returncode != 0:
         raise Exception(f"FFmpeg error: {result.stderr}")
@@ -67,6 +96,7 @@ def process_video_request(photo_path: str, audio_url: str) -> str:
     photo_downloaded = False
     if photo_path.startswith("http"):
         local_photo = download_file(photo_path, ".jpg")
+        local_photo = resize_image(local_photo)
         photo_downloaded = True
     else:
         local_photo = photo_path
@@ -81,6 +111,8 @@ def process_video_request(photo_path: str, audio_url: str) -> str:
     if os.path.exists(local_audio):
         os.remove(local_audio)
         print(f"Deleted temporary audio file: {local_audio}")
+    if photo_downloaded and os.path.exists(local_photo):
+        os.remove(local_photo)
 
     firebase_video_url = upload_video_to_firebase(video_path)
     if os.path.exists(video_path):
