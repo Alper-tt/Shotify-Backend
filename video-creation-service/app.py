@@ -10,11 +10,19 @@ import firebase_admin
 from firebase_admin import credentials, storage
 import uuid
 from PIL import Image, ExifTags
+import base64
 
 app = Flask(__name__)
 
 if not firebase_admin._apps:
-    cred = credentials.Certificate("/app/shotify-d5ae8-firebase-adminsdk-fbsvc-9d5f8462d8.json")
+    firebase_config_b64 = os.environ.get("FIREBASE_ADMIN_CONFIG")
+
+    if not firebase_config_b64:
+        raise ValueError("FIREBASE_ADMIN_CONFIG environment variable is not set")
+
+    firebase_config_json = base64.b64decode(firebase_config_b64).decode("utf-8")
+    cred = credentials.Certificate(json.loads(firebase_config_json))
+
     firebase_admin.initialize_app(cred, {
         'storageBucket': 'shotify-d5ae8.firebasestorage.app'
     })

@@ -8,6 +8,7 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.core.env.Environment;
 
 @Configuration
 public class RabbitMQConfig {
@@ -20,8 +21,12 @@ public class RabbitMQConfig {
 
 
     @Bean
-    public CachingConnectionFactory connectionFactory() {
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory("localhost");
+    public CachingConnectionFactory connectionFactory(Environment environment) {
+        String rabbitmqHost = environment.getProperty("spring.rabbitmq.host");
+        int rabbitmqPort = Integer.parseInt(environment.getProperty("spring.rabbitmq.port"));
+
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitmqHost);
+        connectionFactory.setPort(rabbitmqPort);
         connectionFactory.setUsername("guest");
         connectionFactory.setPassword("guest");
         return connectionFactory;

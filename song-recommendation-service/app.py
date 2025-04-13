@@ -10,7 +10,7 @@ import pika
 import json
 import threading
 
-df = pd.read_csv('turkish_song_lyrics.csv')
+df = pd.read_csv('/app/turkish_song_lyrics.csv')
 try:
     _create_default_https_context = ssl._create_default_https_context
 except AttributeError:
